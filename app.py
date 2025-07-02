@@ -11,9 +11,11 @@
 
 import asyncio
 import os
-import base64
 from dotenv import load_dotenv
 from playwright.async_api import async_playwright
+import requests
+import json
+from bs4 import BeautifulSoup
 
 from google import genai
 from google.genai import types
@@ -42,11 +44,21 @@ async def cleanContent(elements_list):
 async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=False)
-        context = await browser.new_context()
+         # Create a persistent context that saves to disk
+        context = await p.chromium.launch_persistent_context(
+            user_data_dir="./browser_data",  # Directory to save session data
+            headless=False,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--disable-web-security"
+            ]
+        )
         page = await context.new_page()
         
         await page.goto('https://penncoursereview.com/')
         await page.wait_for_load_state('domcontentloaded')
+
+        
 
         #landing page code.
         #landing page code.  
@@ -72,23 +84,42 @@ async def main():
         await page.locator('button').click()
         print("submitted form")
 
-        print("🛑 MANUAL 2FA REQUIRED!")
-        print("Please complete 2FA in the browser, then press Enter here...")
+        # print("🛑 MANUAL 2FA REQUIRED!")
+        # print("Please complete 2FA in the browser, then press Enter here...")
         input("Press Enter when you're logged in and ready to continue...")
         
 
         await page.wait_for_load_state('domcontentloaded')
         await page.wait_for_timeout(4000)
 
-   
-        
+        print("\n" + "="*50)
+        contents = await page.query_selector_all('span')
+        print(contents)
+        for i, content in enumerate(contents):
+            inner_text = await content.inner_text()
+            if inner_text.strip():  # Only print non-empty content
+                print(f"Row {i}: {inner_text}")
 
+        # # time to spam depatments and just do all of them.
+        # input("Press Enter when you want to continue")
+        departments = ['ACFD', 'ACCT', 'AFRC', 'ASLD', 'AMHR','CIS']
 
+        for dept in departments:
+            await page.goto(f"https://penncoursereview.com/department/{dept}")
+            await page.wait_for_load_state('domcontentloaded')
+            await page.wait_for_timeout(5000)
+            print("\n" + "="*50)
+            contents = await page.query_selector_all('span')
+            print(contents)
+            for i, content in enumerate(contents):
+                inner_text = await content.inner_text()
+                if inner_text.strip():  # Only print non-empty content
+                    print(f"Row {i}: {inner_text}")
+
+           
 
         await page.screenshot(path="/Users/zikangjiang/learning_coding/browser_agent_tutorial1/ss.png")
 
-        
-        
 asyncio.run(main())
 
 
