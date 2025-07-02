@@ -48,22 +48,43 @@ async def main():
         await page.goto('https://penncoursereview.com/')
         await page.wait_for_load_state('domcontentloaded')
 
-        #login code.
-        #login code.  
-        #login code. 
+        #landing page code.
+        #landing page code.  
+        #landing page code. 
         await page.locator('input').fill("math")
         print("filled input")
-
         #important, otherwise, not enough time to pause and move on.
+        await page.wait_for_load_state('domcontentloaded')
         await page.wait_for_timeout(2000)
+
         print('pause')
-        
         await page.locator('input').press('Enter')
         print("pressed enter on input field")
 
+        #login page code
         await page.wait_for_load_state('domcontentloaded')
-        await page.wait_for_timeout(5000)
+        await page.wait_for_timeout(2000)
+
+        await page.locator('#username').fill('zktorus')
+        await page.locator('#password').fill('changetheworld_ORION')
+        # inputs = await page.locator('input')
+        print("entered username and password")
+        await page.locator('button').click()
+        print("submitted form")
+
+        print("🛑 MANUAL 2FA REQUIRED!")
+        print("Please complete 2FA in the browser, then press Enter here...")
+        input("Press Enter when you're logged in and ready to continue...")
+        
+
         await page.wait_for_load_state('domcontentloaded')
+        await page.wait_for_timeout(4000)
+
+   
+        
+
+
+
         await page.screenshot(path="/Users/zikangjiang/learning_coding/browser_agent_tutorial1/ss.png")
 
         
