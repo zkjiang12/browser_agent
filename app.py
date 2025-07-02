@@ -47,37 +47,27 @@ async def main():
         
         await page.goto('https://penncoursereview.com/')
         await page.wait_for_load_state('domcontentloaded')
+
+        #login code.
+        #login code.  
+        #login code. 
+        await page.locator('input').fill("math")
+        print("filled input")
+
+        #important, otherwise, not enough time to pause and move on.
+        await page.wait_for_timeout(2000)
+        print('pause')
         
-  
-        clickableContent = await page.query_selector_all('a, button, span, [role = "button"], [onClick]')
-        #the *= means contains instead of equals.
-        inputForms = await page.query_selector_all('textarea, input, div, [name*="username"], [name*="login"], [name*="password"], [name*="email"], [placeholder*="username"], [placeholder*="password"], [placeholder*="email"], [id*="login"], [id*="signup"]')
-        # Also search for sign-in related elements more broadly
-        signInElements = await page.query_selector_all('a[href*="signin"], a[href*="login"], button[aria-label*="sign"], [id*="sign"], [class*="sign"], a:has-text("Sign in"), a:has-text("sign in"), button:has-text("Sign in")')
-        
+        await page.locator('input').press('Enter')
+        print("pressed enter on input field")
+
+        await page.wait_for_load_state('domcontentloaded')
+        await page.wait_for_timeout(5000)
+        await page.wait_for_load_state('domcontentloaded')
         await page.screenshot(path="/Users/zikangjiang/learning_coding/browser_agent_tutorial1/ss.png")
 
-        parsed_clickable_content = await cleanContent(clickableContent)
-        parsed_inputForms = await cleanContent(inputForms)
-        parsed_signInElements = await cleanContent(signInElements)
-
-        # Read the screenshot and encode it for Gemini
-        screenshot_path = "/Users/zikangjiang/learning_coding/browser_agent_tutorial1/ss.png"
-        with open(screenshot_path, "rb") as image_file:
-            image_data = base64.b64encode(image_file.read()).decode('utf-8')
-
-        response = client.models.generate_content(
-            model = "gemini-2.5-flash",
-            contents = [
-                "You are a helpful browser use assistant. you do the tasks on the browser that the user tells you to do! ",
-                "I want to figure out what courses I should take for my freshman year at UPenn.",
-                "These are the elements extracted from the website. What is the current situation and What is the action we should take next. Respond with the specific element name that we should click or that we should input text into. If that element is not available in the list of elements presented, then respond by saying what we still need to look. ",
-                f"{parsed_clickable_content}, {parsed_inputForms},{parsed_signInElements}",
-            ]
-        )
-        print("=== AI RESPONSE ===")
-        print(response.candidates[0].content.parts[0].text)
-
+        
+        
 asyncio.run(main())
 
 
@@ -90,3 +80,34 @@ asyncio.run(main())
 # we can use Gemini to tell us what to get the label of and then we can get that element and we can have tools(or for now just a workflow) 
 # where if it needs to click it runs that code or if it needs to input it does that. 
 # ok, that's very cool. and then everytime the page changes, we just take another screen shot. 
+
+
+# # Read the screenshot and encode it for Gemini
+# screenshot_path = "/Users/zikangjiang/learning_coding/browser_agent_tutorial1/ss.png"
+# with open(screenshot_path, "rb") as image_file:
+#     image_data = base64.b64encode(image_file.read()).decode('utf-8')
+
+
+# clickableContent = await page.query_selector_all('a, button, span, [role = "button"], [onClick]')
+# #the *= means contains instead of equals.
+# inputForms = await page.query_selector_all('textarea, input, div, [name*="username"], [name*="login"], [name*="password"], [name*="email"], [placeholder*="username"], [placeholder*="password"], [placeholder*="email"], [id*="login"], [id*="signup"]')
+# # Also search for sign-in related elements more broadly
+# signInElements = await page.query_selector_all('a[href*="signin"], a[href*="login"], button[aria-label*="sign"], [id*="sign"], [class*="sign"], a:has-text("Sign in"), a:has-text("sign in"), button:has-text("Sign in")')
+
+# await page.screenshot(path="/Users/zikangjiang/learning_coding/browser_agent_tutorial1/ss.png")
+
+# parsed_clickable_content = await cleanContent(clickableContent)
+# parsed_inputForms = await cleanContent(inputForms)
+# parsed_signInElements = await cleanContent(signInElements)
+
+# response = client.models.generate_content(
+#     model = "gemini-2.5-flash",
+#     contents = [
+#         "You are a helpful browser use assistant. you do the tasks on the browser that the user tells you to do! ",
+#         "I want to figure out what courses I should take for my freshman year at UPenn.",
+#         "These are the elements extracted from the website. What is the current situation and What is the action we should take next. Respond with the specific element name that we should click or that we should input text into. If that element is not available in the list of elements presented, then respond by saying what we still need to look. ",
+#         f"{parsed_clickable_content}, {parsed_inputForms},{parsed_signInElements}",
+#     ]
+# )
+# print("=== AI RESPONSE ===")
+# print(response.candidates[0].content.parts[0].text)
