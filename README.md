@@ -1,6 +1,7 @@
 Built a browser automation tool to scrape UPenn's Course review.
 
 Reasoning + Design Choices:
+
 needed to figure out what classes to take at Penn. didn't want to actually look into requirements. prompted Gemini, but it lacked sufficient context on quality and rigor of courses. So I decided to get that data from Penn Course Review.
 But, was too lazy to figure out how to get the API/email them for the API. so just used playwright and coded a workflow to scrape everything. didn't scrape the teacher ratings since proffesor information is searchable with Gemini search grounding tool and that would have really increased the depth of the workflow. 
 
